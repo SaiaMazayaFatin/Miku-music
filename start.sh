@@ -26,6 +26,20 @@ shutdown() {
 
 trap shutdown EXIT INT TERM
 
-sleep 5
+echo "[BOOT] Waiting for Lavalink to listen on 127.0.0.1:2333..."
+READY=0
+for _ in $(seq 1 60); do
+  if (echo > /dev/tcp/127.0.0.1/2333) >/dev/null 2>&1; then
+    READY=1
+    break
+  fi
+  sleep 1
+done
+
+if [[ "${READY}" -ne 1 ]]; then
+  echo "[ERROR] Lavalink did not become ready in time"
+  exit 1
+fi
+
 echo "[BOOT] Starting Discord bot..."
 python3 "${ROOT_DIR}/bot.py"

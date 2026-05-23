@@ -49,28 +49,47 @@ bot = commands.Bot(
     help_command=None
 )
 
+_lavalink_connect_lock = asyncio.Lock()
+
+
+async def connect_lavalink(max_attempts=30, delay_seconds=2):
+    async with _lavalink_connect_lock:
+        if wavelink.Pool.nodes:
+            return True
+
+        for attempt in range(1, max_attempts + 1):
+            try:
+                node = wavelink.Node(
+                    uri=LAVALINK_URI,
+                    password=LAVALINK_PASSWORD,
+                )
+                await wavelink.Pool.connect(nodes=[node], client=bot)
+                print("🎶 Miku connected to Lavalink!")
+                return True
+            except Exception as error:
+                print(
+                    f"❌ Lavalink connect attempt {attempt}/{max_attempts} failed: {error}"
+                )
+                if attempt < max_attempts:
+                    await asyncio.sleep(delay_seconds)
+
+        print("❌ Lavalink connection failed after retries.")
+        return False
+
+
+async def lavalink_reconnect_loop():
+    while True:
+        if not wavelink.Pool.nodes:
+            await connect_lavalink(max_attempts=5, delay_seconds=3)
+        await asyncio.sleep(15)
+
 @bot.event
 async def on_ready():
     print(f"💙 Logged in as {bot.user}")
+    await connect_lavalink(max_attempts=30, delay_seconds=2)
 
-    if wavelink.Pool.nodes:
-        return
-
-    for attempt in range(1, 6):
-        try:
-            node = wavelink.Node(
-                uri=LAVALINK_URI,
-                password=LAVALINK_PASSWORD,
-            )
-            await wavelink.Pool.connect(nodes=[node], client=bot)
-            print("🎶 Miku connected to Lavalink!")
-            return
-        except Exception as error:
-            print(f"❌ Lavalink connect attempt {attempt}/5 failed: {error}")
-            if attempt < 5:
-                await asyncio.sleep(3)
-
-    print("❌ Lavalink connection failed after retries.")
+    if getattr(bot, "_lavalink_reconnector", None) is None:
+        bot._lavalink_reconnector = asyncio.create_task(lavalink_reconnect_loop())
 
 @bot.command()
 async def halo(ctx):
