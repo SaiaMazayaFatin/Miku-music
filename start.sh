@@ -28,7 +28,7 @@ trap shutdown EXIT INT TERM
 
 echo "[BOOT] Waiting for Lavalink to listen on 127.0.0.1:2333..."
 READY=0
-for _ in $(seq 1 60); do
+for _ in $(seq 1 180); do
   if (echo > /dev/tcp/127.0.0.1/2333) >/dev/null 2>&1; then
     READY=1
     break
@@ -37,8 +37,9 @@ for _ in $(seq 1 60); do
 done
 
 if [[ "${READY}" -ne 1 ]]; then
-  echo "[ERROR] Lavalink did not become ready in time"
-  exit 1
+  echo "[WARN] Lavalink not ready yet, starting bot and relying on reconnect loop"
+else
+  echo "[BOOT] Lavalink is ready"
 fi
 
 echo "[BOOT] Starting Discord bot..."
