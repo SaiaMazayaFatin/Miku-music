@@ -1,0 +1,13 @@
+[project]
+name = "miku-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "discord-py>=2.7.1",
+    "python-dotenv>=1.1.1",
+    "pynacl>=1.6.2",
+    "wavelink>=3.4.1",
+    "yt-dlp>=2026.3.17",
+]

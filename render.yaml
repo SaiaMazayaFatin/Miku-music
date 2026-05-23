@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: miku-bot
+    env: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: LAVALINK_URI
+        value: http://127.0.0.1:2333
+      - key: LAVALINK_PASSWORD
+        sync: false

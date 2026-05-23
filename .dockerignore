@@ -1,0 +1,17 @@
+.git
+.gitignore
+.venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
+!.env.example
+
+# Local/editor files
+.DS_Store
+*.log
+
+# Keep Lavalink runtime assets in build context
+# (Lavalink.jar and plugins are required at runtime)
