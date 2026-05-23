@@ -76,20 +76,10 @@ async def connect_lavalink(max_attempts=30, delay_seconds=2):
         print("❌ Lavalink connection failed after retries.")
         return False
 
-
-async def lavalink_reconnect_loop():
-    while True:
-        if not wavelink.Pool.nodes:
-            await connect_lavalink(max_attempts=5, delay_seconds=3)
-        await asyncio.sleep(15)
-
 @bot.event
 async def on_ready():
     print(f"💙 Logged in as {bot.user}")
     await connect_lavalink(max_attempts=30, delay_seconds=2)
-
-    if getattr(bot, "_lavalink_reconnector", None) is None:
-        bot._lavalink_reconnector = asyncio.create_task(lavalink_reconnect_loop())
 
 @bot.command()
 async def halo(ctx):
