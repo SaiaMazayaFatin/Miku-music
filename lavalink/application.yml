@@ -1,3 +1,10 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+
 server:
   port: 2333
   address: 127.0.0.1
